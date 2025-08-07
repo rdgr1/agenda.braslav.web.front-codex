@@ -13,6 +13,7 @@ import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-
 import { Unidade } from '../../models/unidade.model';
 import { UnidadeService } from '../../services/unidade.service';
 import { UnidadeAddFormComponent } from '../../components/forms/unidade-add-form/unidade-add-form.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-unidade-page',
@@ -39,6 +40,7 @@ export class UnidadePageComponent {
   constructor(
     private dialog: MatDialog,
     private unidadeService: UnidadeService,
+    private toastr: ToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -46,10 +48,15 @@ export class UnidadePageComponent {
   }
 
   obterUnidades(): void {
-    this.unidadeService.obterUnidades().subscribe(unidades => {
-      this.dataSource.data = unidades;
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+    this.unidadeService.obterUnidades().subscribe({
+      next: unidades => {
+        this.dataSource.data = unidades;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      },
+      error: () => {
+        this.toastr.error('Erro ao carregar unidades', 'Erro');
+      }
     });
   }
 
@@ -75,8 +82,14 @@ export class UnidadePageComponent {
     
       dialogRef.afterClosed().subscribe(confirmado => {
         if (confirmado) {
-          this.unidadeService.deletarUnidade(unidade.uuid).subscribe(() => {
-            this.obterUnidades(); 
+          this.unidadeService.deletarUnidade(unidade.uuid).subscribe({
+            next: () => {
+              this.toastr.success('Unidade deletada com sucesso!', 'Sucesso');
+              this.obterUnidades();
+            },
+            error: () => {
+              this.toastr.error('Erro ao deletar unidade', 'Erro');
+            }
           });
         }
       });

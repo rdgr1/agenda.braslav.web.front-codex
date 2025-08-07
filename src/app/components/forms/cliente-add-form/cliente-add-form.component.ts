@@ -13,6 +13,7 @@ import { ClienteService } from '../../../services/cliente.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UnidadeService } from '../../../services/unidade.service';
 import { Unidade } from '../../../models/unidade.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-cliente-add-form',
@@ -42,7 +43,8 @@ export class ClienteFormComponent implements OnInit {
     private clienteService: ClienteService,
     private unidadeService: UnidadeService,
     private dialogRef: MatDialogRef<ClienteFormComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: Cliente // cliente opcional passado ao abrir o diálogo
+    @Inject(MAT_DIALOG_DATA) public data: Cliente, // cliente opcional passado ao abrir o diálogo
+    private toastr: ToastrService
   ) {}
 
    parseBoolean(value: any): boolean {
@@ -60,8 +62,13 @@ export class ClienteFormComponent implements OnInit {
       pendenteSync: [true]
     });
 
-    this.unidadeService.obterUnidades().subscribe((dados) => {
-      this.unidades = dados;
+    this.unidadeService.obterUnidades().subscribe({
+      next: (dados) => {
+        this.unidades = dados;
+      },
+      error: () => {
+        this.toastr.error('Erro ao carregar unidades', 'Erro');
+      }
     });
 
     if (this.data) {
@@ -77,15 +84,25 @@ export class ClienteFormComponent implements OnInit {
 
     if (this.isEditMode && this.data?.uuid) {
       const cliente: Cliente = { uuid: this.data.uuid, ...this.form.value };
-      console.log('Enviando cliente para atualização:', cliente); 
-      this.clienteService.atualizarCliente(this.data.uuid, cliente).subscribe(() => {
-        this.dialogRef.close(true);
+      this.clienteService.atualizarCliente(this.data.uuid, cliente).subscribe({
+        next: () => {
+          this.toastr.success('Cliente atualizado com sucesso!', 'Sucesso');
+          this.dialogRef.close(true);
+        },
+        error: () => {
+          this.toastr.error('Erro ao atualizar cliente', 'Erro');
+        }
       });
     } else {
       const cliente: ClienteCriar = this.form.value;
-      console.log('Enviando cliente para criação:', cliente); 
-      this.clienteService.criarCliente(cliente).subscribe(() => {
-        this.dialogRef.close(true);
+      this.clienteService.criarCliente(cliente).subscribe({
+        next: () => {
+          this.toastr.success('Cliente criado com sucesso!', 'Sucesso');
+          this.dialogRef.close(true);
+        },
+        error: () => {
+          this.toastr.error('Erro ao criar cliente', 'Erro');
+        }
       });
     }
   }

@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-password-dialog',
@@ -31,23 +32,28 @@ export class PasswordDialogComponent {
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<PasswordDialogComponent>,
     private usuarioService: UsuarioService,
-    @Inject(MAT_DIALOG_DATA) public data: { uuid: string }
+    @Inject(MAT_DIALOG_DATA) public data: { uuid: string },
+    private toastr: ToastrService
   ) {
     this.form = this.fb.group({
       senha: ['', [Validators.required, Validators.minLength(6)]],
     });
   }
 
-  ngOnInit() {
-    console.log('UUID recebido:', this.data.uuid);
-  }
+  ngOnInit() {}
   
 
   onSubmit() {
     if (this.form.invalid) return;
 
-    this.usuarioService.alterarSenha(this.data.uuid, this.form.value.senha).subscribe(() => {
-      this.dialogRef.close(true);
+    this.usuarioService.alterarSenha(this.data.uuid, this.form.value.senha).subscribe({
+      next: () => {
+        this.toastr.success('Senha alterada com sucesso!', 'Sucesso');
+        this.dialogRef.close(true);
+      },
+      error: () => {
+        this.toastr.error('Erro ao alterar senha', 'Erro');
+      }
     });
   }
 

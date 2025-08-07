@@ -13,6 +13,7 @@ import { Usuario, UsuarioCriar } from '../../../models/usuario.model';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UnidadeService } from '../../../services/unidade.service';
 import { RoleService } from '../../../services/role.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-usuario-add-form',
@@ -44,7 +45,8 @@ export class UsuarioAddFormComponent {
     private unidadeService: UnidadeService,
     private roleService: RoleService,
     private dialogRef: MatDialogRef<UsuarioAddFormComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: Usuario
+    @Inject(MAT_DIALOG_DATA) public data: Usuario,
+    private toastr: ToastrService
   ) {}
 
   parseBoolean(value: any): boolean {
@@ -68,12 +70,22 @@ export class UsuarioAddFormComponent {
       this.form.patchValue(this.data);
     }
 
-    this.roleService.obterRoles().subscribe((roles) => {
-      this.roles = roles;
+    this.roleService.obterRoles().subscribe({
+      next: (roles) => {
+        this.roles = roles;
+      },
+      error: () => {
+        this.toastr.error('Erro ao carregar roles', 'Erro');
+      }
     });
-  
-    this.unidadeService.obterUnidades().subscribe((unidades) => {
-      this.unidades = unidades;
+
+    this.unidadeService.obterUnidades().subscribe({
+      next: (unidades) => {
+        this.unidades = unidades;
+      },
+      error: () => {
+        this.toastr.error('Erro ao carregar unidades', 'Erro');
+      }
     });
     
   }
@@ -89,8 +101,14 @@ export class UsuarioAddFormComponent {
   
     if (this.isEditMode && this.data?.uuid) {
       const usuario: Usuario = { uuid: this.data.uuid, ...formValue };
-      this.usuarioService.atualizarUsuario(this.data.uuid, usuario).subscribe(() => {
-        this.dialogRef.close(true);
+      this.usuarioService.atualizarUsuario(this.data.uuid, usuario).subscribe({
+        next: () => {
+          this.toastr.success('Usuário atualizado com sucesso!', 'Sucesso');
+          this.dialogRef.close(true);
+        },
+        error: () => {
+          this.toastr.error('Erro ao atualizar usuário', 'Erro');
+        }
       });
     } else {
       const roleUuid = formValue.roleUuid;      // capturado para uso na requisição
@@ -105,8 +123,14 @@ export class UsuarioAddFormComponent {
   
       const usuario: UsuarioCriar = formValue;
   
-      this.usuarioService.criarUsuario(usuario, roleUuid, unidadeUuid).subscribe(() => {
-        this.dialogRef.close(true);
+      this.usuarioService.criarUsuario(usuario, roleUuid, unidadeUuid).subscribe({
+        next: () => {
+          this.toastr.success('Usuário criado com sucesso!', 'Sucesso');
+          this.dialogRef.close(true);
+        },
+        error: () => {
+          this.toastr.error('Erro ao criar usuário', 'Erro');
+        }
       });
     }
   }
