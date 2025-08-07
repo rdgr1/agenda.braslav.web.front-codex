@@ -1,0 +1,20 @@
+<div class="container">
+    <div class="logo"><img src="../../../assets/img/logo.png" alt="logo"></div>
+    <div class="text"><p class="first" >Bem Vindo!</p><p>Página de Gestão Agenda Braslav</p></div>
+    <div class="formulario">
+        <form [formGroup]="loginForm" (ngSubmit)="submit()">
+            <div class="title">
+                <h1>Login</h1>
+            </div>
+            <app-input formControlName="email" inputName="email" type="name" label="Email"
+                placeholder="Insira seu email" autocomplete="email" required></app-input>
+            <app-input formControlName="password" inputName="password" type="password" label="Senha"
+                placeholder="Insira sua senha" autocomplete="password"
+                required>
+            </app-input>
+            <app-button [disabled]="disabled">
+                Entrar
+            </app-button>
+        </form>
+    </div>
+</div>

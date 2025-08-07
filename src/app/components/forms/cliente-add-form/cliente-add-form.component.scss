@@ -1,0 +1,82 @@
+:host {
+  display: block;
+  padding: 24px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.dialog-container {
+
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh; // ou o limite desejado
+  overflow: hidden;
+  overflow-y: auto;
+  padding-right: 8px;}
+
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh; // ou o limite desejado
+  overflow: hidden;
+
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  .title {
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  button {
+    mat-icon {
+      font-size: 28px;
+    }
+  }
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+  }
+
+  mat-form-field {
+    width: 100%;
+
+    ::ng-deep .mat-form-field-infix {
+      height: 60px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+    }
+
+    ::ng-deep input, ::ng-deep select, ::ng-deep textarea {
+      font-size: 18px;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 32px;
+
+    button {
+      min-width: 120px;
+      height: 48px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
+}
+}

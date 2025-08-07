@@ -1,0 +1,92 @@
+<div class="dialog-header">
+    <span class="title">{{ isEditMode ? 'Editar Entrega' : 'Adicionar Entrega' }}</span>
+    <button mat-icon-button (click)="onCancel()" aria-label="Fechar">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+
+<form [formGroup]="form" class="formulario" (ngSubmit)="onSubmit()">
+    <div class="form-row">
+        <mat-form-field appearance="outline">
+            <mat-label  >Cliente</mat-label>
+            <mat-select formControlName="clienteUuid">
+              <mat-option *ngFor="let cliente of clientes" [value]="cliente.uuid">
+                {{ cliente.nome}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          
+        <mat-form-field appearance="outline">
+            <mat-label>Data</mat-label>
+            <input matInput type="data" formControlName="data" mask="00/00/0000" />
+            <mat-error *ngIf="form.get('data')?.hasError('required') && form.get('data')?.touched">
+                Data é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Hora</mat-label>
+            <input matInput type="time"  formControlName="hora" mask="00:00" />
+            <mat-error *ngIf="form.get('hora')?.hasError('required') && form.get('hora')?.touched">
+                Hora é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Cep</mat-label>
+            <input matInput formControlName="cep" mask="00000-000" />
+            <mat-error *ngIf="form.get('cep')?.hasError('required') && form.get('cep')?.touched">
+                Cep é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Endereço</mat-label>
+            <input matInput formControlName="endereco" />
+            <mat-error *ngIf="form.get('endereco')?.hasError('required') && form.get('endereco')?.touched">
+                Endereço é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>ROL</mat-label>
+            <input matInput type="number" formControlName="ticket" />
+            <mat-error *ngIf="form.get('ticket')?.hasError('required') && form.get('ticket')?.touched">
+                Rol é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Observação</mat-label>
+            <input matInput formControlName="obsevacao" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Operação</mat-label>
+            <mat-select formControlName="tipoEntrega">
+                <mat-option value='ENTREGAECOLETA'>Entrega e coleta</mat-option>
+                <mat-option value='ENTREGA'>Entrega</mat-option>
+                <mat-option value='COLETA'>Coleta</mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('tipoEntrega')?.hasError('required') && form.get('tipoEntrega')?.touched">
+                Operação é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Entregue</mat-label>
+            <mat-select formControlName="statusEntrega">
+                <mat-option value=true>Sim</mat-option>
+                <mat-option value=false>Não</mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('statusEntrega')?.hasError('required') && form.get('statusEntrega')?.touched">
+                Status é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <div class="form-actions">
+            <button mat-button type="button" (click)="onCancel()">Cancelar</button>
+            <button mat-raised-button color="primary" type="submit">Salvar</button>
+        </div>
+    </div>
+</form>

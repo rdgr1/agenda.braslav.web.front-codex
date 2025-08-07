@@ -1,0 +1,136 @@
+<div class="container">
+  <div *ngIf="filterAtivo && dadosCarregados" class="container-filter">
+    <form [formGroup]="filtroForm" class="filtros">
+      <div class="filtro-grid">
+  
+        <mat-form-field appearance="outline">
+          <mat-label>Data</mat-label>
+          <input matInput placeholder="00/00/0000"  formControlName="data" >
+        </mat-form-field>
+  
+        <mat-form-field appearance="outline">
+          <mat-label>Hora</mat-label>
+          <input matInput placeholder="00:00" formControlName="hora"  >
+        </mat-form-field>
+
+  
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option [value]="''">Todos</mat-option>
+            <mat-option [value]=true>Sim</mat-option>
+            <mat-option [value]=false>Não </mat-option>
+          </mat-select>
+        </mat-form-field>
+  
+        <mat-form-field appearance="outline">
+          <mat-label>Cliente</mat-label>
+          <input type="text" matInput [formControl]="clienteInputCtrl" [matAutocomplete]="autoCliente">
+          <mat-autocomplete #autoCliente="matAutocomplete" (optionSelected)="onClienteSelected($event.option.value)">
+            <mat-option *ngFor="let cliente of filteredClientes$ | async" [value]="cliente">
+              {{ cliente.nome }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Unidade</mat-label>
+          <input type="text" matInput [formControl]="unidadeInputCtrl" [matAutocomplete]="autoUnidade">
+          <mat-autocomplete #autoUnidade="matAutocomplete" (optionSelected)="onUnidadeSelected($event.option.value)">
+            <mat-option *ngFor="let unidade of filteredUnidades$ | async" [value]="unidade">
+              {{ unidade.nome }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        
+        
+
+  
+      </div>
+    </form>
+  </div>
+  
+  <div class="container-header">
+    <h2>Entregas</h2>
+    <div class="container-acao">
+      <button mat-fab extended (click)="filterAtivo = !filterAtivo">
+        <mat-icon>filter_list</mat-icon>
+        {{ filterAtivo ? 'Ocultar Filtros' : 'Mostrar Filtros' }}
+      </button>
+
+      <button (click)="openForm()" mat-fab extended>
+        <mat-icon>add</mat-icon>
+        Adicionar
+      </button>
+    </div>
+  </div>
+  <table mat-table [dataSource]="dataSource" class="mat-table">
+
+    <ng-container matColumnDef="nomeCliente">
+      <th mat-header-cell *matHeaderCellDef> Nome </th>
+      <td mat-cell *matCellDef="let entrega"> {{clienteMap.get(entrega.clienteUuid) | uppercase }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="data">
+      <th mat-header-cell *matHeaderCellDef> Data </th>
+      <td mat-cell *matCellDef="let entrega"> {{ entrega.data  }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="hora">
+      <th mat-header-cell *matHeaderCellDef> Hora </th>
+      <td mat-cell *matCellDef="let entrega"> {{ entrega.hora  }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="cep">
+      <th mat-header-cell *matHeaderCellDef> CEP </th>
+      <td mat-cell *matCellDef="let entrega"> {{entrega.cep | cepFormat}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="endereco">
+      <th mat-header-cell *matHeaderCellDef> Endereço </th>
+      <td mat-cell *matCellDef="let entrega"> {{entrega.endereco}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="observacao">
+      <th mat-header-cell *matHeaderCellDef> Complemento</th>
+      <td mat-cell *matCellDef="let entrega"> {{ entrega.observacao}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="unidade">
+      <th mat-header-cell *matHeaderCellDef> Unidade </th>
+      <td mat-cell *matCellDef="let entrega"> {{unidadeMap.get(entrega.unidadeUuid)}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="ticket-ROL">
+      <th mat-header-cell *matHeaderCellDef> Ticket ROL </th>
+      <td mat-cell *matCellDef="let entrega"> {{entrega.ticket}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="tipoEntrega">
+      <th mat-header-cell *matHeaderCellDef> Operação </th>
+      <td mat-cell *matCellDef="let entrega"> {{entrega.tipoEntrega == "ENTREGAECOLETA" ? "ENTREGA E COLETA" : entrega.tipoEntrega }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="statusEntrega">
+      <th mat-header-cell *matHeaderCellDef> Entregue </th>
+      <td mat-cell *matCellDef="let entrega"> {{entrega.statusEntrega == true ? "Sim" : "Não"}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="acoes">
+      <th mat-header-cell *matHeaderCellDef> Ações </th>
+      <td mat-cell *matCellDef="let entrega">
+        <button mat-icon-button color="primary" matTooltip="Editar" (click)="editar(entrega)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" matTooltip="Excluir" (click)="deletar(entrega)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+    <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
+  </table>
+    <mat-paginator class="paginator" [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"   showFirstLastButtons>
+</mat-paginator>
+</div>

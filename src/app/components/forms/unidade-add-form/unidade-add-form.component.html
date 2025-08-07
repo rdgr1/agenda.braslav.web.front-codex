@@ -1,0 +1,23 @@
+<div class="dialog-header">
+    <span class="title">{{isEditMode ? 'Editar Unidade': 'Adicionar Unidade'}}</span>
+    <button mat-icon-button (click)="onCancel()" aria-label="Fechar">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+
+<form [formGroup]="form" class="formulario">
+    <div class="form-row">
+        <mat-form-field appearance="outline">
+            <mat-label>Nome</mat-label>
+            <input matInput formControlName="nome" />
+            <mat-error *ngIf="form.get('nome')?.hasError('required') && form.get('nome')?.touched">
+                Nome é obrigatório
+            </mat-error>
+        </mat-form-field>
+        
+        <div class="form-actions">
+            <button mat-raised-button color="primary" type="submit" (click)="onSubmit()">Salvar</button>
+            <button mat-button type="button" (click)="onCancel()">Cancelar</button>
+        </div>
+    </div>
+</form>

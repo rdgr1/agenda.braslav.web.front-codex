@@ -1,0 +1,24 @@
+<mat-toolbar class="mat-elevation-z3">
+  
+  <button mat-icon-button (click)="collapsed.set(!collapsed())">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <a href="https://agenda.braslav.com.br/#/homepage/dashboard">
+    <img src="assets/img/logo.png" alt="Logo"  />
+  </a>
+</mat-toolbar>
+
+
+
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav [opened]="true" mode="side" [style.width]="sidenavWidth()">
+   <div [class.collapsed]="collapsed()">
+  <app-custom-sidebar [collapsed]="collapsed()"></app-custom-sidebar>
+</div>
+
+  </mat-sidenav>
+
+  <mat-sidenav-content class="content" [style.margin-left]="sidenavWidth()">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

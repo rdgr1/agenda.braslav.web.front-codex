@@ -1,0 +1,90 @@
+<div class="dialog-header">
+    <span class="title">{{isEditMode ?'Editar Usuario' : 'Adicionar Usuario'}}</span>
+    <button mat-icon-button (click)="onCancel()" aria-label="Fechar">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+
+<form [formGroup]="form" class="formulario">
+    <div class="form-row">
+        <mat-form-field appearance="outline">
+            <mat-label>Nome</mat-label>
+            <input matInput formControlName="nome" />
+            <mat-error *ngIf="form.get('nome')?.hasError('required') && form.get('nome')?.touched">
+                Nome é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+
+        <mat-form-field appearance="outline">
+            <mat-label>Usuario</mat-label>
+            <input matInput formControlName="usuario" />
+            <mat-error *ngIf="form.get('usuario')?.hasError('required') && form.get('usuario')?.touched">
+                Usuario é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" />
+            <mat-error *ngIf="form.get('email')?.hasError('required') && form.get('email')?.touched">
+                Email é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Sistema</mat-label>
+            <input matInput formControlName="system" />
+            <mat-error *ngIf="form.get('system')?.hasError('required') && form.get('system')?.touched">
+                Sistema é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="!isEditMode " appearance="outline">
+            <mat-label>Senha</mat-label>
+            <input matInput [type]="hide ? 'password' : 'text'" formControlName="senha" />
+            <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Mostrar ou ocultar senha'" type="button">
+              <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="form.get('senha')?.hasError('required') && form.get('senha')?.touched">
+              Senha é obrigatória
+            </mat-error>
+          </mat-form-field>
+          
+
+        <mat-form-field appearance="outline">
+            <mat-label>Ativo</mat-label>
+            <mat-select formControlName="status">
+                <mat-option value=true>Sim</mat-option>
+                <mat-option value=false>Não</mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('status')?.hasError('required') && form.get('status')?.touched">
+                Status é obrigatório
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Unidade</mat-label>
+            <mat-select formControlName="unidadeUuid">
+              <mat-option *ngFor="let unidade of unidades" [value]="unidade.uuid">
+                {{ unidade.nome }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline">
+            <mat-label>Rule</mat-label>
+            <mat-select formControlName="roleUuid">
+              <mat-option *ngFor="let role of roles" [value]="role.uuid">
+                {{ role.nome }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          
+        
+        <div class="form-actions">
+          <button mat-button type="button" (click)="onCancel()">Cancelar</button>
+            <button mat-raised-button color="primary" type="submit" (click)="onSubmit()">Salvar</button>
+        </div>
+    </div>
+</form>

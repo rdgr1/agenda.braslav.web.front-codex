@@ -1,0 +1,90 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Cabeçalho */
+.sidenav-header {
+  padding: 16px 0;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.6rem;
+  border-bottom: 1px solid #ddd;
+  color: #333;
+  user-select: none;
+  background-color: #f4f4f4;
+}
+
+/* Lista */
+.menu-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 0;
+  overflow: hidden;
+
+
+/* Item padrão */
+.menu-item {
+  color: #333;
+  border-radius: 8px;
+  padding: 14px 5px;
+  transition: background-color 0.3s, color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+
+  .menu-icon {
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .menu-label {
+    font-weight: 500;
+    font-size: 1.1rem;
+  }
+
+  &.hovered:hover {
+    background-color: var(--hover-color);
+    color: #fff;
+
+    .menu-icon, .menu-label {
+      color: #fff;
+    }
+  }
+
+  &.active-link {
+    background-color: var(--hover-color);
+    color: #fff;
+
+    .menu-icon, .menu-label {
+      color: #fff;
+    }
+  }
+}
+}
+/* Logout */
+.logout {
+  margin-top: auto;
+  padding: 16px 0;
+  border-top: 1px solid #e0e0e0;
+
+  .logout-item {
+    color: #c62828;
+    font-weight: 600;
+    border-radius: 8px;
+
+    &:hover {
+      background-color: #ffcdd2;
+    }
+
+    .menu-icon, .menu-label {
+      color: inherit;
+    }
+  }
+}

@@ -1,0 +1,16 @@
+.main-layout {
+  display: flex;
+  height: 100vh;
+
+  app-sidebar {
+    width: 250px;
+    background-color: #f5f5f5;
+    border-right: 1px solid #ccc;
+  }
+
+  app-cliente-page {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+  }
+}
