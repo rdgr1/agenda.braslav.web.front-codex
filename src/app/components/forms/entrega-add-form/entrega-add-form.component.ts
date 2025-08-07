@@ -13,6 +13,7 @@ import { Entrega, EntregaCriar } from '../../../models/entrega.model';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Cliente } from '../../../models/cliente.model';
 import { ClienteService } from '../../../services/cliente.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-entrega-add-form',
@@ -43,7 +44,8 @@ export class EntregaAddFormComponent {
     private dialogRef: MatDialogRef<EntregaAddFormComponent>,
     private entregaService: EntregaService,
     private clienteService: ClienteService,
-    @Inject(MAT_DIALOG_DATA) public data: Entrega
+    @Inject(MAT_DIALOG_DATA) public data: Entrega,
+    private toastr: ToastrService
   ) {}
 
   parseBoolean(value: any): boolean {
@@ -66,13 +68,18 @@ export class EntregaAddFormComponent {
       ativa: [true]
     });
   
-    this.clienteService.obterClientes().subscribe(clientes => {
-      this.clientes = clientes;
-  
-      this.form.get('clienteUuid')?.valueChanges.subscribe(clienteUuid => {
-        const cliente = this.clientes.find(c => c.uuid === clienteUuid);
-        this.unidadeUuidSelecionada = cliente?.unidadeUuid ?? '';
-      });
+    this.clienteService.obterClientes().subscribe({
+      next: clientes => {
+        this.clientes = clientes;
+
+        this.form.get('clienteUuid')?.valueChanges.subscribe(clienteUuid => {
+          const cliente = this.clientes.find(c => c.uuid === clienteUuid);
+          this.unidadeUuidSelecionada = cliente?.unidadeUuid ?? '';
+        });
+      },
+      error: () => {
+        this.toastr.error('Erro ao carregar clientes', 'Erro');
+      }
     });
   
     if (this.data) {
@@ -120,16 +127,28 @@ export class EntregaAddFormComponent {
         ...entregaComUnidade,
       };
   
-      this.entregaService.atualizarEntregas(this.data.uuid, entregaEditada).subscribe(() => {
-        this.dialogRef.close(true);
+      this.entregaService.atualizarEntregas(this.data.uuid, entregaEditada).subscribe({
+        next: () => {
+          this.toastr.success('Entrega atualizada com sucesso!', 'Sucesso');
+          this.dialogRef.close(true);
+        },
+        error: () => {
+          this.toastr.error('Erro ao atualizar entrega', 'Erro');
+        }
       });
     }
     // Criação
     else {
       const novaEntrega: EntregaCriar = entregaComUnidade;
-  
-      this.entregaService.criarEntregas(novaEntrega).subscribe(() => {
-        this.dialogRef.close(true);
+
+      this.entregaService.criarEntregas(novaEntrega).subscribe({
+        next: () => {
+          this.toastr.success('Entrega criada com sucesso!', 'Sucesso');
+          this.dialogRef.close(true);
+        },
+        error: () => {
+          this.toastr.error('Erro ao criar entrega', 'Erro');
+        }
       });
     }
   }

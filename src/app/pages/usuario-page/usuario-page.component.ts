@@ -14,6 +14,7 @@ import { Usuario } from '../../models/usuario.model';
 import { UsuarioService } from '../../services/usuario.service';
 import { UsuarioAddFormComponent } from '../../components/forms/usuario-add-form/usuario-add-form.component';
 import { PasswordDialogComponent } from '../../components/password-dialog/password-dialog.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-usuario-page',
@@ -39,16 +40,22 @@ columnsToDisplay = ['nome', 'email', 'usuario', 'status', 'sistema', 'acoes'];
   constructor(
     private dialog: MatDialog,
     private usuarioService: UsuarioService,
+    private toastr: ToastrService,
   ) {}
 
   ngOnInit(): void {
     this.obterUsuarios();
   }
   obterUsuarios(): void {
-    this.usuarioService.obterUsuarios().subscribe(usuarios => {
-      this.dataSource.data = usuarios;
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+    this.usuarioService.obterUsuarios().subscribe({
+      next: usuarios => {
+        this.dataSource.data = usuarios;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      },
+      error: () => {
+        this.toastr.error('Erro ao carregar usuários', 'Erro');
+      }
     });
   }
 
@@ -75,8 +82,14 @@ columnsToDisplay = ['nome', 'email', 'usuario', 'status', 'sistema', 'acoes'];
     
       dialogRef.afterClosed().subscribe(confirmado => {
         if (confirmado) {
-          this.usuarioService.deletarUsuario(usuario.uuid).subscribe(() => {
-            this.obterUsuarios(); 
+          this.usuarioService.deletarUsuario(usuario.uuid).subscribe({
+            next: () => {
+              this.toastr.success('Usuário deletado com sucesso!', 'Sucesso');
+              this.obterUsuarios();
+            },
+            error: () => {
+              this.toastr.error('Erro ao deletar usuário', 'Erro');
+            }
           });
         }
       });

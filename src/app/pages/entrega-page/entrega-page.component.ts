@@ -26,6 +26,7 @@ import { ClienteService } from '../../services/cliente.service';
 import { UnidadeService } from '../../services/unidade.service';
 import { EntregaAddFormComponent } from '../../components/forms/entrega-add-form/entrega-add-form.component';
 import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
+import { ToastrService } from 'ngx-toastr';
 
 // Modelos e Pipes
 import { Entrega } from '../../models/entrega.model';
@@ -86,7 +87,8 @@ export class EntregaPageComponent implements OnInit {
     private entregaService: EntregaService,
     private clienteService: ClienteService,
     private unidadeService: UnidadeService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -132,17 +134,27 @@ export class EntregaPageComponent implements OnInit {
   }
 
   loadMapsAndData() {
-    this.unidadeService.obterUnidades().subscribe(unidades => {
-      this.unidadesArray = unidades;
-      unidades.forEach(u => this.unidadeMap.set(u.uuid, u.nome));
+    this.unidadeService.obterUnidades().subscribe({
+      next: unidades => {
+        this.unidadesArray = unidades;
+        unidades.forEach(u => this.unidadeMap.set(u.uuid, u.nome));
 
-      this.clienteService.obterClientes().subscribe(clientes => {
-        this.clientesArray = clientes;
-        clientes.forEach(c => this.clienteMap.set(c.uuid, c.nome));
+        this.clienteService.obterClientes().subscribe({
+          next: clientes => {
+            this.clientesArray = clientes;
+            clientes.forEach(c => this.clienteMap.set(c.uuid, c.nome));
 
-        this.obterEntregas();
-        this.dadosCarregados = true;
-      });
+            this.obterEntregas();
+            this.dadosCarregados = true;
+          },
+          error: () => {
+            this.toastr.error('Erro ao carregar clientes', 'Erro');
+          }
+        });
+      },
+      error: () => {
+        this.toastr.error('Erro ao carregar unidades', 'Erro');
+      }
     });
   }
 
@@ -191,10 +203,15 @@ export class EntregaPageComponent implements OnInit {
       ? this.entregaService.buscarEntregasFiltradas(data, hora, status, cliente, unidade)
       : this.entregaService.obterEntregas();
 
-    obs$.subscribe(entregas => {
-      this.dataSource.data = entregas;
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+    obs$.subscribe({
+      next: entregas => {
+        this.dataSource.data = entregas;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      },
+      error: () => {
+        this.toastr.error('Erro ao carregar entregas', 'Erro');
+      }
     });
   }
 
@@ -219,8 +236,14 @@ export class EntregaPageComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(confirmado => {
       if (confirmado) {
-        this.entregaService.deletarEntregas(entrega.uuid).subscribe(() => {
-          this.obterEntregas(this.getFiltros());
+        this.entregaService.deletarEntregas(entrega.uuid).subscribe({
+          next: () => {
+            this.toastr.success('Entrega deletada com sucesso!', 'Sucesso');
+            this.obterEntregas(this.getFiltros());
+          },
+          error: () => {
+            this.toastr.error('Erro ao deletar entrega', 'Erro');
+          }
         });
       }
     });

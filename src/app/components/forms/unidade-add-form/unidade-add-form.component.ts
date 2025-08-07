@@ -10,6 +10,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { UnidadeService } from '../../../services/unidade.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Unidade, UnidadeCriar } from '../../../models/unidade.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-unidade-add-form',
@@ -35,7 +36,8 @@ export class UnidadeAddFormComponent {
     private fb: FormBuilder,
     private unidadeService: UnidadeService,
     private dialogRef: MatDialogRef<UnidadeAddFormComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: Unidade
+    @Inject(MAT_DIALOG_DATA) public data: Unidade,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(){
@@ -55,13 +57,25 @@ export class UnidadeAddFormComponent {
      
      if (this.isEditMode && this.data?.uuid) {
       const unidade: Unidade = { uuid: this.data.uuid, ...this.form.value };
-       this.unidadeService.atualizarUnidade(this.data.uuid, unidade).subscribe(() => {
-         this.dialogRef.close(true);
+       this.unidadeService.atualizarUnidade(this.data.uuid, unidade).subscribe({
+         next: () => {
+           this.toastr.success('Unidade atualizada com sucesso!', 'Sucesso');
+           this.dialogRef.close(true);
+          },
+         error: () => {
+           this.toastr.error('Erro ao atualizar unidade', 'Erro');
+         }
         });
       } else {
        const unidade: UnidadeCriar = this.form.value;
-       this.unidadeService.criarUnidade(unidade).subscribe(() => {
-         this.dialogRef.close();
+       this.unidadeService.criarUnidade(unidade).subscribe({
+         next: () => {
+           this.toastr.success('Unidade criada com sucesso!', 'Sucesso');
+           this.dialogRef.close();
+         },
+         error: () => {
+           this.toastr.error('Erro ao criar unidade', 'Erro');
+         }
        });
 
      }

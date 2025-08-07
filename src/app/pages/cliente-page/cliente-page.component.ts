@@ -22,6 +22,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { TelefoneFormatPipe } from '../../pipes/telefone-format.pipe';
 import { CpfFormatPipe } from '../../pipes/cpf-format.pipe';
 import { UnidadeService } from '../../services/unidade.service';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
@@ -62,16 +63,22 @@ export class ClientePageComponent implements OnInit {
     private dialog: MatDialog,
     private clienteService: ClienteService,
     private unidadeService: UnidadeService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
-    this.unidadeService.obterUnidades().subscribe(unidades => {
-      unidades.forEach(u => {
-        this.unidadeMap.set(u.uuid, u.nome);
-      });
-  
-      this.obterClientes(); 
+    this.unidadeService.obterUnidades().subscribe({
+      next: unidades => {
+        unidades.forEach(u => {
+          this.unidadeMap.set(u.uuid, u.nome);
+        });
+
+        this.obterClientes();
+      },
+      error: () => {
+        this.toastr.error('Erro ao carregar unidades', 'Erro');
+      }
     });
   
     this.filtroForm = this.fb.group({
@@ -95,16 +102,26 @@ export class ClientePageComponent implements OnInit {
   
     if (temFiltroAtivo) {
   
-      this.clienteService.buscarClientesFiltrados(nome, cpf, statusAtivo).subscribe(clientes => {
-        this.dataSource.data = clientes;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+      this.clienteService.buscarClientesFiltrados(nome, cpf, statusAtivo).subscribe({
+        next: clientes => {
+          this.dataSource.data = clientes;
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+        },
+        error: () => {
+          this.toastr.error('Erro ao buscar clientes', 'Erro');
+        }
       });
     } else {
-      this.clienteService.obterClientes().subscribe(clientes => {
-        this.dataSource.data = clientes;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+      this.clienteService.obterClientes().subscribe({
+        next: clientes => {
+          this.dataSource.data = clientes;
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+        },
+        error: () => {
+          this.toastr.error('Erro ao carregar clientes', 'Erro');
+        }
       });
     }
   }
@@ -131,8 +148,14 @@ export class ClientePageComponent implements OnInit {
   
     dialogRef.afterClosed().subscribe(confirmado => {
       if (confirmado) {
-        this.clienteService.deletarCliente(cliente.uuid).subscribe(() => {
-          this.obterClientes(); 
+        this.clienteService.deletarCliente(cliente.uuid).subscribe({
+          next: () => {
+            this.toastr.success('Cliente deletado com sucesso!', 'Sucesso');
+            this.obterClientes();
+          },
+          error: () => {
+            this.toastr.error('Erro ao deletar cliente', 'Erro');
+          }
         });
       }
     });
